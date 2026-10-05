@@ -1,0 +1,10 @@
+gymnasium[atari]>=1.0
+ale-py>=0.9
+opencv-python-headless
+tensorboardX
+tensorboard
+torch
+numpy
+matplotlib
+pandas
+tabulate
