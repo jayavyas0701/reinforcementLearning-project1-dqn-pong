@@ -1,0 +1,3 @@
+frames,baseline_mean100,baseline_plus_per_mean100,source
+367229,12.23,8.68,"PER value from console output; baseline from its TensorBoard log at the same frame"
+786126,18.29,18.13,"PER value from console output; baseline from its TensorBoard log at the same frame"

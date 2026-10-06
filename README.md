@@ -1,46 +1,46 @@
-# CMPE 260 Project 1: basic DQN on Pong, straight from the textbook repo
+# CMPE 260 Project 1: Teaching DQN to Play Pong
 
-Source: https://github.com/PacktPublishing/Deep-Reinforcement-Learning-Hands-On, `Chapter06/`.
-The algorithm is the repo's basic DQN (replay buffer + target network) with no specialised
-variants (no Double/Dueling/Noisy/n-step/Rainbow). Every change is listed in `CHANGES_vs_repo.diff`.
+Team: Jaya Vyas, Prachi Gupta, Keerthana Muralidharan, Yashaswini Dinesh
 
-## Files
-| File | Assignment step | What it is |
-|---|---|---|
-| `lib/wrappers.py`, `lib/dqn_model.py` | all | Repo files. Wrappers ported to Gymnasium; model **unchanged**. |
-| `02_dqn_pong.py` | 1: baseline | Repo script, Gymnasium API fixes only. |
-| `03_dqn_play.py` | eval | Repo script: plays one game with a saved model. |
-| `04_dqn_pong_boltzmann.py` | 2 | Copy of `02`; epsilon-greedy replaced by Boltzmann (softmax) action selection. |
-| `05_dqn_pong_maxboltzmann.py` | 2 | Copy of `02`; the random action in epsilon-greedy is drawn from softmax(Q/τ). |
-| `06_dqn_pong_per.py` | 3 | Copy of `02` + PER buffer and weighted loss from the repo's `Chapter07/05_dqn_prio_replay.py`. `--explore` picks the step-2 method. |
-| `compare.py` | report | Reads `runs/` TensorBoard logs → results table and reward-vs-time / reward-vs-frames plots. |
-| `CHANGES_vs_repo.diff` | report | Exact diff of every file against the repo (or, for 04–06, against the ported 02). |
+Basic DQN from the textbook repo (Lapan, *Deep Reinforcement Learning Hands-On*, Chapter 6),
+ported to Gymnasium 1.x, plus two exploration methods (step 2) and Prioritized Experience Replay (step 3).
+All runs: Google Colab, NVIDIA Tesla T4, one run per configuration.
 
-## Changes needed for current Gymnasium/PyTorch/NumPy (baseline)
-- `gym` → `gymnasium` and `ale_py` env registration.
-- `reset()` returns `(obs, info)`; `step()` returns `(obs, r, terminated, truncated, info)`, with `done = terminated or truncated`.
-- `np.array(..., copy=False)` → `np.array(...)`, which NumPy 2 requires.
-- `torch.ByteTensor` mask → `torch.BoolTensor`. Current PyTorch rejects uint8 masks.
-- The "Solved" message also prints elapsed minutes.
+## Results (frames and minutes to a mean reward of 19 over the last 100 games)
 
-## Run (Colab, GPU runtime)
-```bash
-pip install -r requirements.txt
-python 02_dqn_pong.py --cuda --reward 20                              # step 1 (ran past 19)
-python 04_dqn_pong_boltzmann.py --cuda --reward 19                    # step 2
-python 05_dqn_pong_maxboltzmann.py --cuda --reward 19                 # step 2
-python 06_dqn_pong_per.py --cuda --reward 19 --explore maxboltz       # step 3 (step-2 winner)
-tensorboard --logdir runs
-python compare.py --logdir runs --target 19
-python 03_dqn_play.py -m PongNoFrameskip-v4-best.dat --no-visualize
-```
-`--reward 19` matches the assignment; the repo's default is 19.5.
-Tuning knobs for step 2: `--tau-start`, `--tau-final`, `--tau-frames`.
+| Method | Buffer | Minutes | Frames | Fewer frames vs baseline |
+|---|---|---|---|---|
+| ε-greedy (baseline) | 10k | 138.8 | 862k | – |
+| Boltzmann | 10k | 86.5 | 550k | 36% |
+| Max-Boltzmann | 10k | 75.8 | 492k | 43% |
+| Max-Boltzmann + PER | 10k | 101.4 | 514k | 40% |
+| Max-Boltzmann | 50k | 129.6 | 638k | 26% |
+| Max-Boltzmann + PER | 50k | 91.7 | 448k | 48% |
 
-## Measuring convergence (assignment requirement)
-In TensorBoard, set the horizontal axis to **Relative** and read when `reward_100` crosses 19.
-`compare.py` computes the same number from the logs, plus frames to 19, which doesn't depend on hardware.
-Record the GPU with `nvidia-smi`.
+PER vs no PER at the same buffer: no gain at 10k, 30% fewer frames and 29% less time at 50k.
+Minutes compare fairly only within one buffer size (the 50k buffer runs about 20% slower per frame).
 
-## Results (Colab Tesla T4, one run per method)
-See `results_table.md`, `compare_frames.png` and `compare_time.png`.
+## How to present / rerun
+
+Open `notebooks/CMPE260_Project1_Final.ipynb` in Colab with this folder on Drive at
+`MyDrive/CMPE260_Project1` (or change `DRIVE_FOLDER` in the first cell). Run the cells top to bottom.
+Training is off by default (`RUN_TRAINING = False`); results load from the saved logs and tables.
+The last cell zips everything for download.
+
+## Folder layout
+
+| Path | Contents |
+|---|---|
+| `02_dqn_pong.py` | Step 1 baseline: textbook DQN with ε-greedy |
+| `03_dqn_play.py` | Plays a greedy test game with a saved model |
+| `04_dqn_pong_boltzmann.py`, `05_dqn_pong_maxboltzmann.py` | Step 2 exploration methods |
+| `06_dqn_pong_per.py` | Step 3 PER (`--explore egreedy/boltzmann/maxboltz`) |
+| `compare.py` | Results tables and reward plots from TensorBoard logs |
+| `lib/` | Atari wrappers (Gymnasium port) and the DQN network (unchanged) |
+| `CHANGES_vs_repo.diff` | Every change relative to the textbook repo |
+| `notebooks/` | The collated notebook; `archive/` keeps the original 50k follow-up notebook |
+| `results/` | Results tables, plots and milestone data for both buffer sizes |
+| `runs/` | TensorBoard event files (50k runs included; 10k runs copied in by the notebook) |
+| `logs/`, `models/` | Console logs and best models of the 50k runs |
+
+Scripts default to the textbook 10k buffer; the notebook switches 05 and 06 to 50k for the follow-up.

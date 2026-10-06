@@ -1,0 +1,19 @@
+run,buffer_k,target,frames_k,minutes,source
+Baseline (ε-greedy),10,0,293,45.1,compare.py --target 0 (10k runs)
+Boltzmann,10,0,288,44.4,compare.py --target 0 (10k runs)
+Max-Boltzmann,10,0,331,50.6,compare.py --target 0 (10k runs)
+Max-Boltzmann + PER,10,0,272,52.8,compare.py --target 0 (10k runs)
+Baseline (ε-greedy),10,15,390,60.9,compare.py --target 15 (10k runs)
+Boltzmann,10,15,371,57.5,compare.py --target 15 (10k runs)
+Max-Boltzmann,10,15,424,65.3,compare.py --target 15 (10k runs)
+Max-Boltzmann + PER,10,15,381,74.6,compare.py --target 15 (10k runs)
+Baseline (ε-greedy),10,19,862,138.8,compare.py --target 19 (10k runs)
+Boltzmann,10,19,550,86.5,compare.py --target 19 (10k runs)
+Max-Boltzmann,10,19,492,75.8,compare.py --target 19 (10k runs)
+Max-Boltzmann + PER,10,19,514,101.4,compare.py --target 19 (10k runs)
+Max-Boltzmann,50,0,351,72.2,TensorBoard events in runs/buffer_50k
+Max-Boltzmann + PER,50,0,326,65.9,TensorBoard events in runs/buffer_50k
+Max-Boltzmann,50,15,477,97.9,TensorBoard events in runs/buffer_50k
+Max-Boltzmann + PER,50,15,409,83.4,TensorBoard events in runs/buffer_50k
+Max-Boltzmann,50,19,638,129.6,TensorBoard events in runs/buffer_50k
+Max-Boltzmann + PER,50,19,448,91.7,TensorBoard events in runs/buffer_50k
